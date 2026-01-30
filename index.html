@@ -1,1 +1,147 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Liya AI – Premium Hindi Assistant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<style>
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.card {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 30px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+h1 {
+  margin-bottom: 10px;
+}
+
+button {
+  background: #00c6ff;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 25px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #000;
+  margin-top: 15px;
+}
+
+button:hover {
+  background: #00f2fe;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  margin-top: 15px;
+  font-size: 15px;
+}
+
+.hidden {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>🤖 Liya AI</h1>
+  <p>Hindi Voice Assistant</p>
+
+  <button id="startBtn">Start Liya</button>
+
+  <div id="chatUI" class="hidden">
+    <input id="textInput" placeholder="Yahan likho...">
+    <button onclick="textSend()">Send Text</button>
+  </div>
+</div>
+
+<script>
+const synth = window.speechSynthesis;
+let voices = [];
+
+synth.onvoiceschanged = () => {
+  voices = synth.getVoices();
+};
+
+function speak(text) {
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = "hi-IN";
+  const hindi = voices.find(v => v.lang === "hi-IN");
+  if (hindi) msg.voice = hindi;
+  synth.speak(msg);
+}
+
+document.getElementById("startBtn").onclick = () => {
+  speak("Namaste. Main Liya hoon. Main taiyaar hoon. Aap mujhse baat kar sakte ho.");
+  document.getElementById("chatUI").classList.remove("hidden");
+  startListening();
+};
+
+function startListening() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    speak("Aapka browser voice support nahi karta.");
+    return;
+  }
+
+  const recog = new SpeechRecognition();
+  recog.lang = "hi-IN";
+  recog.start();
+
+  recog.onresult = e => {
+    const userText = e.results[0][0].transcript.toLowerCase();
+    smartReply(userText);
+  };
+}
+
+function smartReply(text) {
+
+  if (text.includes("boss")) {
+    speak("Mera boss Hacker Boy Tufan hai.");
+  }
+
+  else if (text.includes("kisne banaya") || text.includes("create")) {
+    speak("Mujhe create kiya hai Hacker Boy Tufan ne.");
+  }
+
+  else if (text.includes("kya kar sakti ho")) {
+    speak("Main aapki baat sun sakti hoon, text padh sakti hoon, aur Hindi me jawab de sakti hoon.");
+  }
+
+  else {
+    speak("Aapne kaha: " + text + ". Main aapki madad karne ki puri koshish karungi.");
+  }
+
+  setTimeout(startListening, 4000);
+}
+
+function textSend() {
+  const txt = document.getElementById("textInput").value;
+  if (!txt) return;
+  speak("Aapne likha hai: " + txt);
+  document.getElementById("textInput").value = "";
+}
+</script>
+
+</body>
+</html>
